@@ -3,7 +3,7 @@
 	"properties": {
 		"description": "modelo de abertura arquivo parquet",
 		"content": {
-			"query": "SELECT\n    TOP 100 *\nFROM\n    OPENROWSET(\n        BULK 'https://asadatalakelabdevad.dfs.core.windows.net/wwi-02/sale-small/Year=2016/Quarter=Q4/Month=12/Day=20161231/sale-small-20161231-snappy.parquet',\n        FORMAT='PARQUET'\n    ) AS [result]\n",
+			"query": "-- Abrir\n\nSELECT\n    TOP 100 *\nFROM\n    OPENROWSET(\n        BULK 'https://asadatalakelabdevad.dfs.core.windows.net/wwi-02/sale-small/Year=2016/Quarter=Q4/Month=12/Day=20161231/sale-small-20161231-snappy.parquet',\n        FORMAT='PARQUET'\n    ) AS [result]\n\n\n-- Abrir e select\nSELECT\n    TransactionDate, ProductId,\n        CAST(SUM(ProfitAmount) AS decimal(18,2)) AS [(sum) Profit],\n        CAST(AVG(ProfitAmount) AS decimal(18,2)) AS [(avg) Profit],\n        SUM(Quantity) AS [(sum) Quantity]\nFROM\n    OPENROWSET(\n        BULK 'https://asadatalakeSUFFIX.dfs.core.windows.net/wwi-02/sale-small/Year=2016/Quarter=Q4/Month=12/Day=20161231/sale-small-20161231-snappy.parquet',\n        FORMAT='PARQUET'\n    ) AS [r] GROUP BY r.TransactionDate, r.ProductId;\n\n\n--Varios arquivos\nSELECT\n    COUNT(*)\nFROM\n    OPENROWSET(\n        BULK 'https://asadatalakeSUFFIX.dfs.core.windows.net/wwi-02/sale-small/Year=2019/*/*/*/*',\n        FORMAT='PARQUET'\n    ) AS [r];\n",
 			"metadata": {
 				"language": "sql"
 			},
