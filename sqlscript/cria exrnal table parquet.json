@@ -1,0 +1,17 @@
+{
+	"name": "cria exrnal table parquet",
+	"properties": {
+		"content": {
+			"query": "IF NOT EXISTS (SELECT * FROM sys.external_file_formats WHERE name = 'SynapseParquetFormat') \n\tCREATE EXTERNAL FILE FORMAT [SynapseParquetFormat] \n\tWITH ( FORMAT_TYPE = PARQUET)\nGO\n\nIF NOT EXISTS (SELECT * FROM sys.external_data_sources WHERE name = 'wwi-02_asadatalakelabdevad_dfs_core_windows_net') \n\tCREATE EXTERNAL DATA SOURCE [wwi-02_asadatalakelabdevad_dfs_core_windows_net] \n\tWITH (\n\t\tLOCATION   = 'https://asadatalakelabdevad.dfs.core.windows.net/wwi-02', \n\t)\nGo\n\nCREATE EXTERNAL TABLE allsales2019 (\n\t[TransactionId] varchar(8000),\n\t[CustomerId] int,\n\t[ProductId] smallint,\n\t[Quantity] smallint,\n\t[Price] numeric(38,18),\n\t[TotalAmount] numeric(38,18),\n\t[TransactionDate] int,\n\t[ProfitAmount] numeric(38,18),\n\t[Hour] smallint,\n\t[Minute] smallint,\n\t[StoreId] smallint\n\t)\n\tWITH (\n\tLOCATION = 'sale-small/Year=2019/*/*/*/*.parquet',\n\tDATA_SOURCE = [wwi-02_asadatalakelabdevad_dfs_core_windows_net],\n\tFILE_FORMAT = [SynapseParquetFormat]\n\t)\nGO\n\nSELECT TOP 100 * FROM allsales2019\nGO\n\n\nSELECT COUNT(*) FROM allsales2019\n",
+			"metadata": {
+				"language": "sql"
+			},
+			"currentConnection": {
+				"poolName": "Built-in",
+				"databaseName": "demo"
+			},
+			"resultLimit": 5000
+		},
+		"type": "SqlQuery"
+	}
+}
